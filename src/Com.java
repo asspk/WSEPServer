@@ -16,44 +16,27 @@ public class Com {
 	
 	public static void Conncect() throws UnknownHostException, IOException
 	{
-		socket = new Socket("132.72.45.17",8002);
+		socket = new Socket("132.72.45.190",8002);
 		reader=new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 		writer=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"), true);
 
 	}
-	
-	public static String recieveMessage() throws UnsupportedEncodingException, IOException
-	{
-		char[] input = new char [256];
-		String msg="", curr="";
-		System.out.println("before recieve loop");
-//		while(reader.read(input,0,256) != -1 && !((curr = new String(input)).contains("EOM")))
-//		{
-//			msg += curr;
-//			System.out.println("inside recieve loop"+ msg);
-//		}
-		System.out.println("blocked?");
-		reader.read(input);
-		System.out.println("not blocked!");
-		curr = new String(input);
-		msg += curr;
+	public static String recieveMessage() throws UnsupportedEncodingException, IOException {
+		char c[] = new char[1];
+		String msg = "";
+		while (!msg.contains("EOM")) {
+			reader.read(c, 0, 1);
+			msg=msg+c[0];
+			
+		}
 		
-		
-		return msg.substring(0,msg.length()-3);
+		return msg.substring(0, msg.length()-3);
 	}
 	
 	public static void sendMessage(String msg) throws UnsupportedEncodingException, IOException
 	{
-		while(msg.length()>=253)
-		{
-			System.out.println("inside sending loop");
-			writer.print(msg.substring(0, 255));
-			System.out.println(msg.substring(0, 255));
-			System.out.println(msg.substring(256));
-			msg=msg.substring(256);
-		}
-		System.out.println("msg: "+msg+"EOM");
-		writer.print(msg+"EOM");
+		writer.println(msg+"EOM");
+		writer.flush();
 	}
 	
 
